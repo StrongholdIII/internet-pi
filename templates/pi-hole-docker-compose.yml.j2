@@ -1,23 +1,39 @@
 # {{ ansible_managed }}
 ---
-version: "3"
+version: "3.5"
+
+{% if domain_name_enable and domain_name and domain_pihole %}
+{# Make sure pihole and nginx-proxy are in the same network #}
+networks:
+  front-tier:
+    name: internet-monitoring-front-tier
+  back-tier:
+    name: internet-monitoring-back-tier
+{% endif %}
 
 # More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
 services:
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
-    hostname: '{{ pihole_hostname }}'
     ports:
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
+{% if domain_name_enable and domain_name and domain_pihole %}
+      - "38080:80/tcp"
+{% else %}
       - "80:80/tcp"
       - "443:443/tcp"
+{% endif %}      
     environment:
       TZ: '{{ pihole_timezone }}'
       WEBPASSWORD: '{{ pihole_password }}'
       ServerIP: '{{ ansible_facts['default_ipv4']['address'] }}'
+{% if domain_name_enable and domain_name and domain_pihole %}
+    networks:
+      - front-tier
+{% endif %}
     dns:
       - 127.0.0.1
       - 8.8.8.8
@@ -27,3 +43,32 @@ services:
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
+
+
+{% if domain_name_enable %}
+  swag:
+    image: ghcr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./letsencrypt:/config
+    environment:
+      - TZ={{ pihole_timezone }}
+      - PUID={{ domain_PUID }}
+      - PGID={{ domain_PGID }}
+      - EMAIL={{ domain_email }}
+      - URL={{ domain_name }}
+      - SUBDOMAINS=wildcard
+      - VALIDATION=dns
+      - DNSPLUGIN=digitalocean
+    networks:
+      - back-tier
+      - front-tier
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    depends_on:
+      - pihole
+{% endif %}

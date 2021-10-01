@@ -2,10 +2,21 @@
 # Location where configuration files will be stored.
 config_dir: '~'
 
+# Domain names configuration (related services need to be enabled).
+domain_name_enable: false
+domain_name: 'home.local'
+domain_pihole: 'pihole'          # to access pihole via: http://pihole.home.local
+domain_grafana: 'grafana'        # to access grafana via: http://grafana.home.local
+domain_prometheus: 'prometheus'  # to access prometheus via: http://prometheus.home.local
+domain_PUID: 1000
+domain_PGID: 1000
+domain_email: 'youremail@example.com' # Email is needed for the certificate generation
+domain_digital_ocean_api_key: 'aaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccc'
+
 # Pi-hole configuration.
 pihole_enable: true
 pihole_hostname: pihole
-pihole_timezone: America/Chicago
+pihole_timezone: Europe/Vienna # See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 pihole_password: "change-this-password"
 
 # Internet monitoring configuration.

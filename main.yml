@@ -9,6 +9,14 @@
         - example.config.yml
         - config.yml
 
+    - name: Find out absolute config path
+      shell: echo {{ config_dir }}
+      register: playbook_path_output 
+      become: false
+    - set_fact: config_dir={{ playbook_path_output.stdout }} 
+    - debug: msg={{ config_dir }}
+     
+
     - name: Ensure apt cache is up to date.
       ansible.builtin.apt:
         update_cache: true
@@ -22,6 +30,8 @@
       when:
         - ansible_facts.os_family == "Archlinux"
 
+
+
   handlers:
     - name: Include handlers.
       ansible.builtin.import_tasks: tasks/handlers.yml
@@ -30,13 +40,13 @@
     - name: Setup Docker.
       ansible.builtin.import_tasks: tasks/docker.yml
 
-    - name: Set up Internet Monitoring.
-      ansible.builtin.import_tasks: tasks/internet-monitoring.yml
-      when: monitoring_enable
-
     - name: Set up Pi Hole.
       ansible.builtin.import_tasks: tasks/pi-hole.yml
       when: pihole_enable
+
+    - name: Set up Internet Monitoring.
+      ansible.builtin.import_tasks: tasks/internet-monitoring.yml
+      when: monitoring_enable
 
     - name: Set up Shelly Plug Monitoring.
       ansible.builtin.import_tasks: tasks/shelly-plug.yml

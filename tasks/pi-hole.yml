@@ -14,6 +14,18 @@
   become: false
   notify: Restart pi-hole
 
+- name: Create folder for API Key
+  ansible.builtin.file:
+    path: "{{ config_dir }}/pi-hole/letsencrypt/dns-conf"
+    state: directory
+    mode: 0755
+  become: false
+
+- name: Copy Digital Ocean API Key
+  ansible.builtin.template:
+    src: templates/digitalocean.ini.j2
+    dest: "{{ config_dir }}/pi-hole/letsencrypt/dns-conf/digitalocean.ini"
+
 # TODO: The first time this playbook is run, the `pi` user may not be added
 # to the `docker` group, so this task may fail.
 - name: Ensure Pi-hole is running.
@@ -21,3 +33,11 @@
     project_src: "{{ config_dir }}/pi-hole/"
     build: false
   become: false
+
+- name: Copy Pi-hole dnsmasq file  
+  ansible.builtin.template:
+    src: templates/04-pihole-dns-reverse-proxy.conf.j2
+    dest: "{{ config_dir }}/pi-hole/etc-dnsmasq.d/04-pihole-dns-reverse-proxy.conf"
+    mode: '0644'
+  when: domain_name_enable  
+  become: true

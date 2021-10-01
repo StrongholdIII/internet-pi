@@ -1,5 +1,6 @@
+# {{ ansible_managed }}
 ---
-version: "3.1"
+version: "3.5"
 
 volumes:
   prometheus_data: {}
@@ -7,7 +8,9 @@ volumes:
 
 networks:
   front-tier:
+    name: internet-monitoring-front-tier
   back-tier:
+    name: internet-monitoring-back-tier
 
 services:
   prometheus:
@@ -29,6 +32,10 @@ services:
       - speedtest:speedtest
     networks:
       - back-tier
+{% if domain_name_enable and domain_name and domain_prometheus %}
+    environment:
+      - VIRTUAL_PORT=9090
+{% endif %}
 
   grafana:
     image: grafana/grafana
@@ -45,6 +52,10 @@ services:
     networks:
       - back-tier
       - front-tier
+{% if domain_name_enable and domain_name and domain_grafana %}
+    environment:
+      - VIRTUAL_PORT=3000
+{% endif %}
 
   ping:
     tty: true
