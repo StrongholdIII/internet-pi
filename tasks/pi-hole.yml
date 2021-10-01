@@ -19,12 +19,14 @@
     path: "{{ config_dir }}/pi-hole/letsencrypt/dns-conf"
     state: directory
     mode: 0755
+  when: domain_name_enable  
   become: false
 
 - name: Copy Digital Ocean API Key
   ansible.builtin.template:
     src: templates/digitalocean.ini.j2
     dest: "{{ config_dir }}/pi-hole/letsencrypt/dns-conf/digitalocean.ini"
+  when: domain_name_enable  
 
 # TODO: The first time this playbook is run, the `pi` user may not be added
 # to the `docker` group, so this task may fail.
@@ -41,3 +43,28 @@
     mode: '0644'
   when: domain_name_enable  
   become: true
+
+- name: Copy proxy conf pihole
+  ansible.builtin.copy:
+    src: "{{ config_dir }}/pi-hole/letsencrypt/nginx/proxy-confs/pihole.subdomain.conf.sample"
+    dest: "{{ config_dir }}/pi-hole/letsencrypt/nginx/proxy-confs/pihole.subdomain.conf"
+    mode: '0644'
+  when: domain_name_enable
+  become: false
+
+- name: Copy proxy conf grafana
+  ansible.builtin.copy:
+    src: "{{ config_dir }}/pi-hole/letsencrypt/nginx/proxy-confs/grafana.subdomain.conf.sample"
+    dest: "{{ config_dir }}/pi-hole/letsencrypt/nginx/proxy-confs/grafana.subdomain.conf"
+    mode: '0644'
+  when: domain_name_enable
+  become: false
+
+- name: Copy proxy conf prometheus
+  ansible.builtin.copy:
+    src: "{{ config_dir }}/pi-hole/letsencrypt/nginx/proxy-confs/prometheus.subdomain.conf.sample"
+    dest: "{{ config_dir }}/pi-hole/letsencrypt/nginx/proxy-confs/prometheus.subdomain.conf"
+    mode: '0644'
+  when: domain_name_enable
+  become: false
+  notify: Restart pi-hole
