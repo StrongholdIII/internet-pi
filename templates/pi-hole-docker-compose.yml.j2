@@ -61,7 +61,7 @@ services:
       - URL={{ domain_name }}
       - SUBDOMAINS=wildcard
       - VALIDATION=dns
-      - DNSPLUGIN=digitalocean
+      - DNSPLUGIN=cloudflare
     networks:
       - back-tier
       - front-tier
