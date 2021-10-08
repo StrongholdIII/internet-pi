@@ -28,6 +28,7 @@
     mode: '0644'
   when: domain_name_enable  
   become: true
+  notify: Restart pi-hole
 
 - name: Wait until the file pi-hole/letsencrypt/nginx/proxy-confs/pihole.subdomain.conf.sample is present before continuing
   wait_for:
@@ -40,7 +41,8 @@
     dest: "{{ config_dir }}/pi-hole/letsencrypt/dns-conf/cloudflare.ini"
     mode: 0600
   when: domain_name_enable
-  become: false  
+  become: false
+  notify: Restart pi-hole 
 
 - name: Copy proxy conf pihole
   ansible.builtin.copy:
@@ -49,6 +51,7 @@
     mode: '0644'
   when: domain_name_enable
   become: true
+  notify: Restart pi-hole
 
 - name: Copy proxy conf grafana
   ansible.builtin.copy:
@@ -57,6 +60,7 @@
     mode: '0644'
   when: domain_name_enable
   become: true
+  notify: Restart pi-hole
 
 - name: Copy proxy conf prometheus
   ansible.builtin.copy:
