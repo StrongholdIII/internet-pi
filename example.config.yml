@@ -11,7 +11,8 @@ domain_prometheus: 'prometheus'  # to access prometheus via: http://prometheus.h
 domain_PUID: 1000
 domain_PGID: 1000
 domain_email: 'youremail@example.com' # Email is needed for the certificate generation
-domain_digital_ocean_api_key: 'aaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccc'
+domain_cloudflare_api_key: 'aaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccc'
+use_retard_units: false
 
 # Pi-hole configuration.
 pihole_enable: true

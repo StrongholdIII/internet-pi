@@ -162,6 +162,7 @@
                 "color": "#6ED0E0",
                 "value": 0
               },
+{% if use_retard_units %}
               {
                 "color": "green",
                 "value": 28
@@ -174,9 +175,27 @@
                 "color": "red",
                 "value": 50
               }
+{% else %}
+              {
+                "color": "green",
+                "value": 20
+              },
+              {
+                "color": "#EAB839",
+                "value": 23
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+{% endif %}
             ]
           },
+{% if use_retard_units %}
           "unit": "fahrenheit"
+{% else %}
+          "unit": "celsius"
+{% endif %}
         },
         "overrides": []
       },
@@ -206,7 +225,11 @@
       "targets": [
         {
           "exemplar": true,
+{% if use_retard_units %}
           "expr": "atmp{job=\"airgradient-{{ item.id }}\"} * 1.8 + 32",
+{% else %}
+          "expr": "atmp{job=\"airgradient-{{ item.id }}\"}",
+{% endif %}
           "hide": false,
           "interval": "",
           "legendFormat": "",
