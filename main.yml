@@ -50,6 +50,7 @@
         name: "{{ item }}"
         state: stopped
       loop: "{{ docker_info.containers | map(attribute='Id') | list }}"
+      when: stop_all_container
 
     - name: Set up Pi Hole.
       ansible.builtin.import_tasks: tasks/pi-hole.yml
