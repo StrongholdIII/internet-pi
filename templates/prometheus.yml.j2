@@ -34,11 +34,22 @@ scrape_configs:
 {% for sensor in airgradient_sensors %}
   - job_name: 'airgradient-{{ sensor.id }}'
     metrics_path: /metrics
-    scrape_interval: 30s
+    scrape_interval: 1m
     static_configs:
       - targets: ['{{ sensor.ip }}:{{ sensor.port }}']
 {% endfor %}
 {% endif %}
+
+{% if hass_enable %}
+  - job_name: 'homeassistant'
+    scrape_interval: 60s
+    metrics_path: /api/prometheus
+    bearer_token: {{ hass_token }}
+    static_configs:
+      - targets:
+        - "{{ ansible_default_ipv4.address }}:8123"
+{% endif %}
+
 
 {% if starlink_enable %}
   - job_name: 'starlink'

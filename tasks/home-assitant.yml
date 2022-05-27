@@ -1,0 +1,39 @@
+---
+- name: Create home-assitant folder on Pi.
+  ansible.builtin.file:
+    path: "{{ config_dir }}/home-assitant"
+    state: directory
+    mode: 0755
+  become: false
+
+- name: Copy home-assitant docker-compose template to Pi.
+  ansible.builtin.template:
+    src: templates/docker-compose-home-assitant.yml.j2
+    dest: "{{ config_dir }}/home-assitant/docker-compose.yml"
+    mode: '0640'
+  become: false
+
+- name: Ensure home-assitant is running.
+  community.docker.docker_compose:
+    project_src: "{{ config_dir }}/home-assitant/"
+    build: false
+  become: true
+
+- name: Wait until the file pi-hole/letsencrypt/nginx/proxy-confs/pihole.subdomain.conf.sample is present before continuing
+  wait_for:
+    path: "{{ config_dir }}/pi-hole/letsencrypt/nginx/proxy-confs/pihole.subdomain.conf.sample"
+  when: domain_name_enable  
+
+- name: Copy proxy conf home-assitant
+  ansible.builtin.template:
+    src: templates/ssh-proxy.conf.j2
+    dest: "{{ config_dir }}/pi-hole/letsencrypt/nginx/proxy-confs/{{ item.id }}.subdomain.conf"
+    mode: '0644'
+  when: domain_name_enable
+  become: true
+  notify: Restart pi-hole
+  loop: 
+  - id: hass
+    port: 8123
+
+    # TODO update home assitant default conf to enable proxy

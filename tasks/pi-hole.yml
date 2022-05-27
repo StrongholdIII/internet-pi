@@ -19,7 +19,7 @@
   community.docker.docker_compose:
     project_src: "{{ config_dir }}/pi-hole/"
     build: false
-  become: false
+  become: true
 
 - name: Copy Pi-hole dnsmasq file  
   ansible.builtin.template:
@@ -70,3 +70,13 @@
   when: domain_name_enable
   become: true
   notify: Restart pi-hole
+
+- name: Create SSH Proxies for external hosts
+  ansible.builtin.template:
+    src: templates/ssh-proxy.conf.j2
+    dest: "{{ config_dir }}/pi-hole/letsencrypt/nginx/proxy-confs/{{ item.id }}.subdomain.conf"
+    mode: '0644'
+  when: domain_name_enable
+  become: true
+  notify: Restart pi-hole
+  loop: "{{ remote_hosts }}"

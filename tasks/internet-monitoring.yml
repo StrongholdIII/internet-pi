@@ -48,4 +48,4 @@
   community.docker.docker_compose:
     project_src: "{{ config_dir }}/internet-monitoring/"
     build: false
-  become: false
+  become: true

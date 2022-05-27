@@ -60,10 +60,6 @@
       ansible.builtin.import_tasks: tasks/internet-monitoring.yml
       when: monitoring_enable
 
-    - name: Set up Home Assitant.
-      ansible.builtin.import_tasks: tasks/home-assitant.yml
-      when: home_assitant_enable
-
     - name: Set up Shelly Plug Monitoring.
       ansible.builtin.import_tasks: tasks/shelly-plug.yml
       when: shelly_plug_enable

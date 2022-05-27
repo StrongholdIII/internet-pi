@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+---
+version: "3.5"
+
+# More info at https://www.home-assistant.io/installation/raspberrypi
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    volumes:
+      - './config:/config'
+      - '/etc/localtime:/etc/localtime:ro'
+    environment:
+      - PUID={{ domain_PUID }}
+      - PGID={{ domain_PGID }}
